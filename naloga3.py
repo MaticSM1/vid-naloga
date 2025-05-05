@@ -50,7 +50,7 @@ def izracunaj_centre(slika, izbira='naključno', dimenzija_centra=3, T=50, k=3):
 
         return np.array(centri, dtype=np.float32)
 
-ef manhattan(a, b):
+def manhattan(a, b):
     return np.sum(np.abs(a - b)) #D=∣x1​−x2​∣+∣y1​−y2​∣
 
 def kmeans(slika, k=3, iteracije=10, dimenzija_centra=3, T=50):
@@ -90,6 +90,8 @@ def kmeans(slika, k=3, iteracije=10, dimenzija_centra=3, T=50):
         nova_slika[i] = centri[oznake[i]][:3]
 
     return nova_slika.reshape((h, w, 3))
+
+
 
 def meanshift(slika, velikost_okna, dimenzija=3, max_ponovitve=5, min_cd=0.1, vzorec_stevilo=500):
     h_, w_, _ = slika.shape
@@ -131,7 +133,6 @@ def meanshift(slika, velikost_okna, dimenzija=3, max_ponovitve=5, min_cd=0.1, vz
         if dodaj:
             konvergirane.append(xi)
 
-            
     # najbližji center
     rezultat = np.zeros((h_ * w_, 3), dtype=np.uint8)
     for i in range(len(podatki)):
@@ -141,3 +142,21 @@ def meanshift(slika, velikost_okna, dimenzija=3, max_ponovitve=5, min_cd=0.1, vz
         rezultat[i] = najblizji[:3]
 
     return rezultat.reshape((h_, w_, 3))
+
+
+if __name__ == "__main__":
+    slika = cv.imread("slika.jpg")
+    slika = cv.cvtColor(slika, cv.COLOR_BGR2RGB)
+    slika = cv.resize(slika, (200, 200))  # da gre hitreje
+
+    segment_kmeans = kmeans(slika, k=3, iteracije=1, dimenzija_centra=3, T=30)
+    segment_meanshift = meanshift(slika, velikost_okna=0.2, dimenzija=3, max_ponovitve=5, min_cd=0.1, vzorec_stevilo=500)
+
+    # Prikaz
+    plt.figure(figsize=(15, 5))
+    plt.subplot(1, 3, 1)
+    plt.title("org")
+    plt.imshow(slika)
+    plt.axis('off')
+
+ 
