@@ -130,3 +130,14 @@ def meanshift(slika, velikost_okna, dimenzija=3, max_ponovitve=5, min_cd=0.1, vz
                 break
         if dodaj:
             konvergirane.append(xi)
+
+            
+    # najbližji center
+    rezultat = np.zeros((h_ * w_, 3), dtype=np.uint8)
+    for i in range(len(podatki)):
+        px = podatki[i]
+        razdalje = [np.sum((px - c) ** 2) for c in konvergirane]
+        najblizji = konvergirane[np.argmin(razdalje)]
+        rezultat[i] = najblizji[:3]
+
+    return rezultat.reshape((h_, w_, 3))
