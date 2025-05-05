@@ -1,4 +1,4 @@
-import cv2 as cv
+NV-13-prikaz-originalneimport cv2 as cv
 import numpy as np
 import random
 import matplotlib.pyplot as plt
@@ -159,4 +159,9 @@ if __name__ == "__main__":
     plt.imshow(slika)
     plt.axis('off')
 
- 
+    plt.subplot(1, 3, 2)
+    plt.title("kmeans")
+    plt.imshow(segment_kmeans)
+    plt.axis('off')
+
+  
