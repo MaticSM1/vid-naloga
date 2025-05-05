@@ -164,4 +164,10 @@ if __name__ == "__main__":
     plt.imshow(segment_kmeans)
     plt.axis('off')
 
-  
+    plt.subplot(1, 3, 3)
+    plt.title("MeanShift")
+    plt.imshow(segment_meanshift)
+    plt.axis('off')
+
+    plt.tight_layout()
+    plt.show()
