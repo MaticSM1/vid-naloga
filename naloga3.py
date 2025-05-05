@@ -50,3 +50,44 @@ def izracunaj_centre(slika, izbira='naključno', dimenzija_centra=3, T=50, k=3):
 
         return np.array(centri, dtype=np.float32)
 
+ef manhattan(a, b):
+    return np.sum(np.abs(a - b)) #D=∣x1​−x2​∣+∣y1​−y2​∣
+
+def kmeans(slika, k=3, iteracije=10, dimenzija_centra=3, T=50):
+    h, w, _ = slika.shape
+    slika_data = []
+
+    for i in range(h):
+        for j in range(w):
+            if dimenzija_centra == 5:
+                slika_data.append(np.append(slika[i, j], [i / h, j / w]))
+            else:
+                slika_data.append(slika[i, j])
+
+    slika_data = np.array(slika_data, dtype=np.float32)
+
+    centri = izracunaj_centre(slika, 'naključno', dimenzija_centra, T, k)
+    oznake = np.zeros(len(slika_data), dtype=int)
+
+    for interacija in range(iteracije):
+        for i in range(len(slika_data)):
+            min_razdalja = float('inf')
+            naj_center = 0
+            for j in range(k):
+                razdalja = np.sum(np.abs(slika_data[i] - centri[j]))
+                if razdalja < min_razdalja:
+                    min_razdalja = razdalja
+                    naj_center = j
+            oznake[i] = naj_center
+
+        for j in range(k):
+            pripadajoči = [slika_data[i] for i in range(len(slika_data)) if oznake[i] == j]
+            if pripadajoči:
+                centri[j] = np.mean(pripadajoči, axis=0)
+
+    nova_slika = np.zeros((h * w, 3), dtype=np.uint8)
+    for i in range(len(slika_data)):
+        nova_slika[i] = centri[oznake[i]][:3]
+
+    return nova_slika.reshape((h, w, 3))
+
