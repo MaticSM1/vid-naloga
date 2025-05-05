@@ -91,3 +91,42 @@ def kmeans(slika, k=3, iteracije=10, dimenzija_centra=3, T=50):
 
     return nova_slika.reshape((h, w, 3))
 
+def meanshift(slika, velikost_okna, dimenzija=3, max_ponovitve=5, min_cd=0.1, vzorec_stevilo=500):
+    h_, w_, _ = slika.shape
+    podatki = []
+
+    for i in range(h_):
+        for j in range(w_):
+            if dimenzija == 5:
+                podatki.append(np.append(slika[i, j], [i / h_, j / w_]))
+            else:
+                podatki.append(slika[i, j])
+
+    podatki = np.array(podatki, dtype=np.float32)
+
+    # Naključno izbrani centri
+    vzorec_idx = np.random.choice(len(podatki), size=min(vzorec_stevilo, len(podatki)), replace=False)
+    vzorec = podatki[vzorec_idx]
+    konvergirane = []
+
+    for xi in vzorec:
+        for _ in range(max_ponovitve):
+            # kvadrat razdalj za vse točke
+            razdalje = np.sum((podatki - xi) ** 2, axis=1)
+            # gaussovo jedro
+            utezi = np.exp(-razdalje / (2 * velikost_okna ** 2))
+            # premik točke
+            nova_x = np.sum(podatki * utezi[:, np.newaxis], axis=0) / np.sum(utezi)
+            # konvergenca
+            if np.sum((nova_x - xi) ** 2) < 1e-6:
+                break
+            xi = nova_x
+
+        # v stare centre
+        dodaj = True
+        for c in konvergirane:
+            if np.sum((c - xi) ** 2) < min_cd ** 2:
+                dodaj = False
+                break
+        if dodaj:
+            konvergirane.append(xi)
